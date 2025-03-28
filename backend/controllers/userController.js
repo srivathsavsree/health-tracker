@@ -13,42 +13,46 @@ const generateToken = (id) => {
 // @route   POST /api/users
 // @access  Public
 const registerUser = async (req, res) => {
-    const { name, email, password, gender, age } = req.body;
+    try {
+        const { name, email, password, gender, age } = req.body;
 
-    if (!name || !email || !password || !gender || !age) {
-        res.status(400);
-        throw new Error('Please add all fields');
-    }
+        if (!name || !email || !password || !gender || !age) {
+            res.status(400);
+            throw new Error('Please add all fields');
+        }
 
-    // Check if user exists
-    const userExists = await User.findOne({ email });
+        // Check if user exists
+        const userExists = await User.findOne({ email });
 
-    if (userExists) {
-        res.status(400);
-        throw new Error('User already exists');
-    }
+        if (userExists) {
+            res.status(400);
+            throw new Error('User already exists');
+        }
 
-    // Create user
-    const user = await User.create({
-        name,
-        email,
-        password,
-        gender,
-        age,
-    });
-
-    if (user) {
-        res.status(201).json({
-            _id: user.id,
-            name: user.name,
-            email: user.email,
-            gender: user.gender,
-            age: user.age,
-            token: generateToken(user._id),
+        // Create user
+        const user = await User.create({
+            name,
+            email,
+            password,
+            gender,
+            age,
         });
-    } else {
-        res.status(400);
-        throw new Error('Invalid user data');
+
+        if (user) {
+            res.status(201).json({
+                _id: user.id,
+                name: user.name,
+                email: user.email,
+                gender: user.gender,
+                age: user.age,
+                token: generateToken(user._id),
+            });
+        } else {
+            res.status(400);
+            throw new Error('Invalid user data');
+        }
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 };
 
@@ -56,12 +60,29 @@ const registerUser = async (req, res) => {
 // @route   POST /api/users/login
 // @access  Public
 const loginUser = async (req, res) => {
-    const { email, password } = req.body;
+    try {
+        const { email, password } = req.body;
 
-    // Check for user email
-    const user = await User.findOne({ email });
+        if (!email || !password) {
+            res.status(400);
+            throw new Error('Please provide email and password');
+        }
 
-    if (user && (await user.matchPassword(password))) {
+        // Check for user email
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            res.status(401);
+            throw new Error('User not found');
+        }
+
+        const isMatch = await user.matchPassword(password);
+
+        if (!isMatch) {
+            res.status(401);
+            throw new Error('Invalid password');
+        }
+
         res.json({
             _id: user.id,
             name: user.name,
@@ -70,9 +91,8 @@ const loginUser = async (req, res) => {
             age: user.age,
             token: generateToken(user._id),
         });
-    } else {
-        res.status(401);
-        throw new Error('Invalid email or password');
+    } catch (error) {
+        res.status(error.statusCode || 400).json({ message: error.message });
     }
 };
 
@@ -80,19 +100,23 @@ const loginUser = async (req, res) => {
 // @route   GET /api/users/profile
 // @access  Private
 const getUserProfile = async (req, res) => {
-    const user = await User.findById(req.user._id);
+    try {
+        const user = await User.findById(req.user._id);
 
-    if (user) {
-        res.json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            gender: user.gender,
-            age: user.age,
-        });
-    } else {
-        res.status(404);
-        throw new Error('User not found');
+        if (user) {
+            res.json({
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                gender: user.gender,
+                age: user.age,
+            });
+        } else {
+            res.status(404);
+            throw new Error('User not found');
+        }
+    } catch (error) {
+        res.status(error.statusCode || 400).json({ message: error.message });
     }
 };
 
