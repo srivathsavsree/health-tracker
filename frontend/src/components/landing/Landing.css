@@ -1,0 +1,172 @@
+.landing {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #fce8e6 0%, #e8f4f8 100%);
+    padding: 0 2rem;
+}
+
+.landing-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.nav-logo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.nav-link {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: color 0.2s;
+}
+
+.nav-link:hover {
+    color: #4a90e2;
+}
+
+.nav-button {
+    background-color: #6c5ce7;
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.nav-button:hover {
+    background-color: #5a4bd1;
+}
+
+.landing-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 4rem auto;
+    gap: 2rem;
+}
+
+.landing-text {
+    flex: 1;
+}
+
+.landing-text h1 {
+    font-size: 3.5rem;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
+
+.text-primary {
+    color: #4a90e2;
+}
+
+.text-secondary {
+    color: #6c5ce7;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.cta-button {
+    display: inline-block;
+    background-color: #6c5ce7;
+    color: white;
+    text-decoration: none;
+    padding: 1rem 2rem;
+    border-radius: 30px;
+    font-weight: 500;
+    font-size: 1.1rem;
+    transition: transform 0.2s, background-color 0.2s;
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.2);
+}
+
+.cta-button:hover {
+    transform: translateY(-2px);
+    background-color: #5a4bd1;
+}
+
+.landing-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.landing-image img {
+    max-width: 100%;
+    height: auto;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+@media (max-width: 968px) {
+    .landing-content {
+        flex-direction: column;
+        text-align: center;
+        margin: 2rem auto;
+    }
+
+    .landing-text h1 {
+        font-size: 2.5rem;
+    }
+
+    .landing-image {
+        order: -1;
+    }
+
+    .landing-image img {
+        max-width: 80%;
+    }
+}
+
+@media (max-width: 480px) {
+    .landing {
+        padding: 0 1rem;
+    }
+
+    .nav-logo {
+        font-size: 1.2rem;
+    }
+
+    .landing-text h1 {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .cta-button {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+} 

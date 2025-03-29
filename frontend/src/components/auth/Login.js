@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './Auth.css';
 
@@ -28,7 +28,7 @@ const Login = () => {
             await login(formData.email, formData.password);
             navigate('/dashboard');
         } catch (err) {
-            setError(err.message);
+            setError(err.message || 'Failed to login');
         } finally {
             setLoading(false);
         }
@@ -37,9 +37,12 @@ const Login = () => {
     return (
         <div className="auth-container">
             <div className="auth-card">
-                <h2>Login</h2>
-                {error && <div className="alert alert-danger">{error}</div>}
-                <form onSubmit={handleSubmit}>
+                <div className="auth-header">
+                    <h2>Health Tracker</h2>
+                    <h3>Login</h3>
+                </div>
+                {error && <div className="auth-error">{error}</div>}
+                <form onSubmit={handleSubmit} className="auth-form">
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
                         <input
@@ -49,6 +52,7 @@ const Login = () => {
                             value={formData.email}
                             onChange={handleChange}
                             required
+                            placeholder="Enter your email"
                         />
                     </div>
                     <div className="form-group">
@@ -60,15 +64,16 @@ const Login = () => {
                             value={formData.password}
                             onChange={handleChange}
                             required
+                            placeholder="Enter your password"
                         />
                     </div>
-                    <button type="submit" disabled={loading}>
+                    <button type="submit" className="auth-button" disabled={loading}>
                         {loading ? 'Logging in...' : 'Login'}
                     </button>
                 </form>
-                <p className="auth-link">
-                    Don't have an account? <a href="/register">Register</a>
-                </p>
+                <div className="auth-footer">
+                    <p>Don't have an account? <Link to="/register">Sign up</Link></p>
+                </div>
             </div>
         </div>
     );

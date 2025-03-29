@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './Auth.css';
 
@@ -38,7 +38,7 @@ const Register = () => {
             await register(registerData);
             navigate('/dashboard');
         } catch (err) {
-            setError(err.message);
+            setError(err.message || 'Failed to create account');
         } finally {
             setLoading(false);
         }
@@ -47,9 +47,12 @@ const Register = () => {
     return (
         <div className="auth-container">
             <div className="auth-card">
-                <h2>Register</h2>
-                {error && <div className="alert alert-danger">{error}</div>}
-                <form onSubmit={handleSubmit}>
+                <div className="auth-header">
+                    <h2>Health Tracker</h2>
+                    <h3>Create Account</h3>
+                </div>
+                {error && <div className="auth-error">{error}</div>}
+                <form onSubmit={handleSubmit} className="auth-form">
                     <div className="form-group">
                         <label htmlFor="name">Name</label>
                         <input
@@ -59,6 +62,7 @@ const Register = () => {
                             value={formData.name}
                             onChange={handleChange}
                             required
+                            placeholder="Enter your name"
                         />
                     </div>
                     <div className="form-group">
@@ -70,6 +74,7 @@ const Register = () => {
                             value={formData.email}
                             onChange={handleChange}
                             required
+                            placeholder="Enter your email"
                         />
                     </div>
                     <div className="form-group">
@@ -81,6 +86,7 @@ const Register = () => {
                             value={formData.password}
                             onChange={handleChange}
                             required
+                            placeholder="Create a password"
                         />
                     </div>
                     <div className="form-group">
@@ -92,41 +98,47 @@ const Register = () => {
                             value={formData.confirmPassword}
                             onChange={handleChange}
                             required
+                            placeholder="Confirm your password"
                         />
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="gender">Gender</label>
-                        <select
-                            id="gender"
-                            name="gender"
-                            value={formData.gender}
-                            onChange={handleChange}
-                            required
-                        >
-                            <option value="">Select Gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                        </select>
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label htmlFor="gender">Gender</label>
+                            <select
+                                id="gender"
+                                name="gender"
+                                value={formData.gender}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="">Select gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="age">Age</label>
+                            <input
+                                type="number"
+                                id="age"
+                                name="age"
+                                value={formData.age}
+                                onChange={handleChange}
+                                required
+                                placeholder="Enter your age"
+                                min="1"
+                                max="120"
+                            />
+                        </div>
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="age">Age</label>
-                        <input
-                            type="number"
-                            id="age"
-                            name="age"
-                            value={formData.age}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <button type="submit" disabled={loading}>
-                        {loading ? 'Creating Account...' : 'Register'}
+                    <button type="submit" className="auth-button" disabled={loading}>
+                        {loading ? 'Creating Account...' : 'Sign Up'}
                     </button>
                 </form>
-                <p className="auth-link">
-                    Already have an account? <a href="/login">Login</a>
-                </p>
+                <div className="auth-footer">
+                    <p>Already have an account? <Link to="/login">Login</Link></p>
+                </div>
             </div>
         </div>
     );
