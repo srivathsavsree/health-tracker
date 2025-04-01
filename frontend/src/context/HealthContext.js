@@ -20,7 +20,7 @@ export const HealthProvider = ({ children }) => {
 
     const fetchHealthRecords = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/health');
+            const response = await axios.get('/health');
             setHealthRecords(response.data);
         } catch (error) {
             console.error('Error fetching health records:', error);
@@ -29,7 +29,7 @@ export const HealthProvider = ({ children }) => {
 
     const fetchHealthStats = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/health/stats');
+            const response = await axios.get('/health/stats');
             setStats(response.data);
         } catch (error) {
             console.error('Error fetching health stats:', error);
@@ -38,7 +38,7 @@ export const HealthProvider = ({ children }) => {
 
     const createHealthRecord = async (recordData) => {
         try {
-            const response = await axios.post('http://localhost:5000/api/health', recordData);
+            const response = await axios.post('/health', recordData);
             setHealthRecords([response.data, ...healthRecords]);
             return response.data;
         } catch (error) {
@@ -48,7 +48,7 @@ export const HealthProvider = ({ children }) => {
 
     const updateHealthRecord = async (id, recordData) => {
         try {
-            const response = await axios.put(`http://localhost:5000/api/health/${id}`, recordData);
+            const response = await axios.put(`/health/${id}`, recordData);
             setHealthRecords(healthRecords.map(record => 
                 record._id === id ? response.data : record
             ));
@@ -60,7 +60,7 @@ export const HealthProvider = ({ children }) => {
 
     const deleteHealthRecord = async (id) => {
         try {
-            await axios.delete(`http://localhost:5000/api/health/${id}`);
+            await axios.delete(`/health/${id}`);
             setHealthRecords(healthRecords.filter(record => record._id !== id));
         } catch (error) {
             throw error.response?.data?.message || 'Error deleting health record';
