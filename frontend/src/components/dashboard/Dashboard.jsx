@@ -1,14 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faHeartPulse,
-  faPersonRunning,
-  faUtensils,
-  faBed,
-  faWeight,
-  faChartLine
-} from '@fortawesome/free-solid-svg-icons';
+  Heart,
+  Activity,
+  Utensils,
+  Moon,
+  Weight,
+  TrendingUp
+} from 'lucide-react';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -90,37 +89,37 @@ const Dashboard = () => {
     {
       title: 'Heart Rate',
       value: '72 bpm',
-      icon: faHeartPulse,
+      icon: Heart,
       color: '#ff6b6b'
     },
     {
       title: 'Activity',
       value: '8,439 steps',
-      icon: faPersonRunning,
+      icon: Activity,
       color: '#6c5ce7'
     },
     {
       title: 'Nutrition',
       value: '1,800 cal',
-      icon: faUtensils,
+      icon: Utensils,
       color: '#20c997'
     },
     {
       title: 'Sleep',
       value: '7h 30m',
-      icon: faBed,
+      icon: Moon,
       color: '#339af0'
     },
     {
       title: 'Weight',
       value: '68 kg',
-      icon: faWeight,
+      icon: Weight,
       color: '#fcc419'
     },
     {
       title: 'Progress',
       value: '85%',
-      icon: faChartLine,
+      icon: TrendingUp,
       color: '#51cf66'
     }
   ];
@@ -142,7 +141,10 @@ const Dashboard = () => {
             <Card className="metric-card">
               <Card.Body>
                 <div className="metric-icon" style={{ backgroundColor: metric.color + '15' }}>
-                  <FontAwesomeIcon icon={metric.icon} style={{ color: metric.color }} />
+                  {React.createElement(metric.icon, {
+                    size: 24,
+                    style: { color: metric.color }
+                  })}
                 </div>
                 <div className="metric-info">
                   <h3>{metric.title}</h3>

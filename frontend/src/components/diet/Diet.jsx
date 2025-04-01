@@ -1,13 +1,12 @@
 import React, { useState, useContext } from 'react';
 import { Container, Row, Col, Card, Form, Button, Table } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faUtensils,
-  faPlus,
-  faClock,
-  faCalendar,
-  faFire
-} from '@fortawesome/free-solid-svg-icons';
+import { 
+  Utensils,
+  Plus,
+  Clock,
+  Calendar,
+  Flame
+} from 'lucide-react';
 import { HealthContext } from '../../context/HealthContext';
 import './Diet.css';
 
@@ -69,7 +68,7 @@ const Diet = () => {
           <Card className="meal-log-card">
             <Card.Body>
               <h2>
-                <FontAwesomeIcon icon={faUtensils} className="me-2" />
+                <Utensils size={20} className="me-2" />
                 Recent Meals
               </h2>
               <Table responsive className="meal-table">
@@ -100,7 +99,7 @@ const Diet = () => {
           <Card className="add-meal-card">
             <Card.Body>
               <h2>
-                <FontAwesomeIcon icon={faPlus} className="me-2" />
+                <Plus size={20} className="me-2" />
                 Add Meal
               </h2>
               <Form onSubmit={handleSubmit}>
@@ -134,7 +133,7 @@ const Diet = () => {
 
                 <Form.Group className="mb-3">
                   <Form.Label>
-                    <FontAwesomeIcon icon={faFire} className="me-2" />
+                    <Flame size={18} className="me-2" />
                     Calories
                   </Form.Label>
                   <Form.Control
@@ -152,7 +151,7 @@ const Diet = () => {
                   <Col>
                     <Form.Group className="mb-3">
                       <Form.Label>
-                        <FontAwesomeIcon icon={faCalendar} className="me-2" />
+                        <Calendar size={18} className="me-2" />
                         Date
                       </Form.Label>
                       <Form.Control
@@ -167,7 +166,7 @@ const Diet = () => {
                   <Col>
                     <Form.Group className="mb-3">
                       <Form.Label>
-                        <FontAwesomeIcon icon={faClock} className="me-2" />
+                        <Clock size={18} className="me-2" />
                         Time
                       </Form.Label>
                       <Form.Control
@@ -182,6 +181,7 @@ const Diet = () => {
                 </Row>
 
                 <Button type="submit" className="submit-button">
+                  <Plus size={18} className="me-2" />
                   Add Meal
                 </Button>
               </Form>

@@ -1,19 +1,21 @@
 import React, { useState, useContext } from 'react';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faRunning,
-  faSwimming,
-  faBiking,
-  faDumbbell,
-  faWalking,
-  faPlus
-} from '@fortawesome/free-solid-svg-icons';
+import { 
+  Activity,
+  Bike,
+  Dumbbell,
+  User,
+  Waves,
+  Flower2,
+  Heart,
+  Clock,
+  Flame
+} from 'lucide-react';
 import { HealthContext } from '../../context/HealthContext';
 import './Activities.css';
 
 const Activities = () => {
-  const { addActivity } = useContext(HealthContext);
+  const { addActivity, activities } = useContext(HealthContext);
   const [newActivity, setNewActivity] = useState({
     type: '',
     duration: '',
@@ -22,11 +24,12 @@ const Activities = () => {
   });
 
   const activityTypes = [
-    { name: 'Running', icon: faRunning, color: '#ff6b6b' },
-    { name: 'Swimming', icon: faSwimming, color: '#339af0' },
-    { name: 'Cycling', icon: faBiking, color: '#51cf66' },
-    { name: 'Gym', icon: faDumbbell, color: '#fcc419' },
-    { name: 'Walking', icon: faWalking, color: '#20c997' }
+    { name: 'Running', icon: Activity, color: '#ff6b6b' },
+    { name: 'Swimming', icon: Waves, color: '#339af0' },
+    { name: 'Cycling', icon: Bike, color: '#51cf66' },
+    { name: 'Gym', icon: Dumbbell, color: '#fcc419' },
+    { name: 'Walking', icon: User, color: '#20c997' },
+    { name: 'Yoga', icon: Flower2, color: '#845ef7' }
   ];
 
   const handleSubmit = async (e) => {
@@ -67,7 +70,7 @@ const Activities = () => {
             >
               <Card.Body>
                 <div className="activity-icon" style={{ backgroundColor: activity.color + '15' }}>
-                  <FontAwesomeIcon icon={activity.icon} style={{ color: activity.color }} />
+                  <activity.icon size={24} style={{ color: activity.color }} />
                 </div>
                 <h3>{activity.name}</h3>
               </Card.Body>
@@ -81,7 +84,7 @@ const Activities = () => {
           <Card className="add-activity-card">
             <Card.Body>
               <h2>
-                <FontAwesomeIcon icon={faPlus} className="me-2" />
+                <Activity size={20} className="me-2" />
                 Add New Activity
               </h2>
               <Form onSubmit={handleSubmit}>
@@ -140,6 +143,7 @@ const Activities = () => {
                 </Form.Group>
 
                 <Button type="submit" className="submit-button">
+                  <Activity size={18} className="me-2" />
                   Add Activity
                 </Button>
               </Form>

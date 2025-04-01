@@ -2,25 +2,37 @@ import React, { useContext } from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faHome, 
-  faRunning, 
-  faUtensils, 
-  faBullseye, 
-  faCog, 
-  faSignOutAlt 
-} from '@fortawesome/free-solid-svg-icons';
+  Home,
+  Activity,
+  Utensils,
+  Target,
+  Settings,
+  LogOut
+} from 'lucide-react';
 import './Navbar.css';
 
 const NavigationBar = () => {
-  const { isAuthenticated, logout } = useContext(AuthContext);
+  const { isAuthenticated, logout, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
+
+  // Show a simplified navbar while loading
+  if (loading) {
+    return (
+      <Navbar bg="light" expand="lg" className="navbar-custom" fixed="top">
+        <Container>
+          <Navbar.Brand as={Link} to="/" className="brand-text">
+            Health Tracker
+          </Navbar.Brand>
+        </Container>
+      </Navbar>
+    );
+  }
 
   return (
     <Navbar bg="light" expand="lg" className="navbar-custom" fixed="top">
@@ -34,23 +46,23 @@ const NavigationBar = () => {
             {isAuthenticated ? (
               <>
                 <Nav.Link as={Link} to="/dashboard" className="nav-link-custom">
-                  <FontAwesomeIcon icon={faHome} className="me-2" />
+                  <Home size={18} className="me-2" />
                   Dashboard
                 </Nav.Link>
                 <Nav.Link as={Link} to="/activities" className="nav-link-custom">
-                  <FontAwesomeIcon icon={faRunning} className="me-2" />
+                  <Activity size={18} className="me-2" />
                   Activities
                 </Nav.Link>
                 <Nav.Link as={Link} to="/diet" className="nav-link-custom">
-                  <FontAwesomeIcon icon={faUtensils} className="me-2" />
+                  <Utensils size={18} className="me-2" />
                   Diet
                 </Nav.Link>
                 <Nav.Link as={Link} to="/goals" className="nav-link-custom">
-                  <FontAwesomeIcon icon={faBullseye} className="me-2" />
+                  <Target size={18} className="me-2" />
                   Goals
                 </Nav.Link>
                 <Nav.Link as={Link} to="/settings" className="nav-link-custom">
-                  <FontAwesomeIcon icon={faCog} className="me-2" />
+                  <Settings size={18} className="me-2" />
                   Settings
                 </Nav.Link>
                 <Button 
@@ -58,7 +70,7 @@ const NavigationBar = () => {
                   onClick={handleLogout}
                   className="ms-2 logout-btn"
                 >
-                  <FontAwesomeIcon icon={faSignOutAlt} className="me-2" />
+                  <LogOut size={18} className="me-2" />
                   Logout
                 </Button>
               </>

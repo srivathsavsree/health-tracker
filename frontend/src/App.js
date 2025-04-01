@@ -16,9 +16,9 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 
 function App() {
   return (
-    <AuthProvider>
-      <HealthProvider>
-        <Router>
+    <Router>
+      <AuthProvider>
+        <HealthProvider>
           <div className="App">
             <NavigationBar />
             <Routes>
@@ -59,9 +59,9 @@ function App() {
               />
             </Routes>
           </div>
-        </Router>
-      </HealthProvider>
-    </AuthProvider>
+        </HealthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

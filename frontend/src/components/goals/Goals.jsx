@@ -1,14 +1,13 @@
 import React, { useState, useContext } from 'react';
 import { Container, Row, Col, Card, Form, Button, ProgressBar } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faFlag,
-  faPlus,
-  faRunning,
-  faUtensils,
-  faWeight,
-  faHeart
-} from '@fortawesome/free-solid-svg-icons';
+import { 
+  Flag,
+  Plus,
+  Activity,
+  Utensils,
+  Weight,
+  Heart
+} from 'lucide-react';
 import { HealthContext } from '../../context/HealthContext';
 import './Goals.css';
 
@@ -23,10 +22,10 @@ const Goals = () => {
   });
 
   const goalTypes = [
-    { name: 'Weight', value: 'weight', icon: faWeight, color: '#fcc419' },
-    { name: 'Activity', value: 'activity', icon: faRunning, color: '#6c5ce7' },
-    { name: 'Nutrition', value: 'nutrition', icon: faUtensils, color: '#20c997' },
-    { name: 'Health', value: 'health', icon: faHeart, color: '#ff6b6b' }
+    { name: 'Weight', value: 'weight', icon: Weight, color: '#fcc419' },
+    { name: 'Activity', value: 'activity', icon: Activity, color: '#6c5ce7' },
+    { name: 'Nutrition', value: 'nutrition', icon: Utensils, color: '#20c997' },
+    { name: 'Health', value: 'health', icon: Heart, color: '#ff6b6b' }
   ];
 
   const currentGoals = [
@@ -78,7 +77,7 @@ const Goals = () => {
 
   const getGoalIcon = (type) => {
     const goalType = goalTypes.find(gt => gt.value === type);
-    return goalType ? goalType.icon : faFlag;
+    return goalType ? goalType.icon : Flag;
   };
 
   const getGoalColor = (type) => {
@@ -100,10 +99,10 @@ const Goals = () => {
               <Card key={index} className="goal-card">
                 <Card.Body>
                   <div className="goal-icon" style={{ backgroundColor: getGoalColor(goal.type) + '15' }}>
-                    <FontAwesomeIcon 
-                      icon={getGoalIcon(goal.type)} 
-                      style={{ color: getGoalColor(goal.type) }}
-                    />
+                    {React.createElement(getGoalIcon(goal.type), {
+                      size: 24,
+                      style: { color: getGoalColor(goal.type) }
+                    })}
                   </div>
                   <h3>{goal.title}</h3>
                   <p className="goal-target">Target: {goal.target}</p>
@@ -124,7 +123,7 @@ const Goals = () => {
           <Card className="add-goal-card">
             <Card.Body>
               <h2>
-                <FontAwesomeIcon icon={faPlus} className="me-2" />
+                <Plus size={20} className="me-2" />
                 Add New Goal
               </h2>
               <Form onSubmit={handleSubmit}>
@@ -192,6 +191,7 @@ const Goals = () => {
                 </Form.Group>
 
                 <Button type="submit" className="submit-button">
+                  <Plus size={18} className="me-2" />
                   Set Goal
                 </Button>
               </Form>
