@@ -1,5 +1,0 @@
-[33m146a975[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{0}: commit: Update frontend .gitignore and add frontend files
-[33m7db6896[m HEAD@{1}: commit: Add .gitattributes for line ending configuration
-[33ma87aba6[m HEAD@{2}: reset: moving to HEAD
-[33ma87aba6[m HEAD@{3}: Branch: renamed refs/heads/master to refs/heads/main
-[33ma87aba6[m HEAD@{5}: commit (initial): Initial commit: Health Tracker Application

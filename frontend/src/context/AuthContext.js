@@ -1,7 +1,10 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
+import config from '../config';
 
 const AuthContext = createContext();
+
+export { AuthContext };  // Export the context itself
 
 export const useAuth = () => {
     return useContext(AuthContext);
@@ -15,36 +18,51 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            // Try to get user data with the token
+            fetchUserData(token);
+        } else {
+            setLoading(false);
         }
-        setLoading(false);
     }, []);
 
-    const login = async (email, password) => {
+    const fetchUserData = async (token) => {
         try {
-            const response = await axios.post('http://localhost:5000/api/users/login', {
-                email,
-                password
+            const response = await axios.get(`${config.API_BASE_URL}/api/auth/profile`, {
+                headers: { Authorization: `Bearer ${token}` }
             });
-            const { token } = response.data;
+            setUser(response.data);
+        } catch (error) {
+            localStorage.removeItem('token');
+            delete axios.defaults.headers.common['Authorization'];
+            setUser(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const login = async (formData) => {
+        try {
+            const response = await axios.post(`${config.API_BASE_URL}/api/auth/login`, formData);
+            const { token, user } = response.data;
             localStorage.setItem('token', token);
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            setUser(response.data);
+            setUser(user);
             return response.data;
         } catch (error) {
-            throw error.response?.data?.message || 'An error occurred during login';
+            throw error;
         }
     };
 
     const register = async (userData) => {
         try {
-            const response = await axios.post('http://localhost:5000/api/users', userData);
-            const { token } = response.data;
+            const response = await axios.post(`${config.API_BASE_URL}/api/auth/register`, userData);
+            const { token, user } = response.data;
             localStorage.setItem('token', token);
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            setUser(response.data);
+            setUser(user);
             return response.data;
         } catch (error) {
-            throw error.response?.data?.message || 'An error occurred during registration';
+            throw error;
         }
     };
 
@@ -54,17 +72,33 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const updateUser = async (userData) => {
+        try {
+            const response = await axios.put(`${config.API_BASE_URL}/api/user/profile`, userData);
+            setUser(response.data);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    };
+
     const value = {
         user,
         login,
         register,
         logout,
-        loading
+        updateUser,
+        loading,
+        isAuthenticated: !!user
     };
+
+    if (loading) {
+        return null; // or a loading spinner
+    }
 
     return (
         <AuthContext.Provider value={value}>
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
-}; 
+};

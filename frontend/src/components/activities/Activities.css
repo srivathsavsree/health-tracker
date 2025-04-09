@@ -1,0 +1,293 @@
+.activities-container {
+  padding: 2rem 1rem;
+  margin-top: 60px;
+}
+
+.activities-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.activities-header h1 {
+  color: #2d3748;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.activities-header p {
+  color: #718096;
+  font-size: 1.1rem;
+}
+
+.activity-types-grid {
+  margin-bottom: 3rem;
+}
+
+.activity-type-card {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.activity-type-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.activity-type-card.selected {
+  border: 2px solid #6c5ce7;
+  transform: translateY(-5px);
+}
+
+.activity-type-card .card-body {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.activity-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.activity-icon svg {
+  font-size: 1.75rem;
+}
+
+.activity-type-card h3 {
+  font-size: 1rem;
+  color: #2d3748;
+  margin: 0;
+  font-weight: 500;
+}
+
+.add-activity-card {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.add-activity-card h2 {
+  color: #2d3748;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.add-activity-card .form-label {
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.add-activity-card .form-control,
+.add-activity-card .form-select {
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  border-color: #e2e8f0;
+}
+
+.add-activity-card .form-control:focus,
+.add-activity-card .form-select:focus {
+  border-color: #6c5ce7;
+  box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
+}
+
+.submit-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #6c5ce7;
+  border-color: #6c5ce7;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #5a4bd1;
+  border-color: #5a4bd1;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .activities-container {
+    padding: 1rem;
+  }
+
+  .activities-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .activities-header p {
+    font-size: 1rem;
+  }
+
+  .activity-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .activity-icon svg {
+    font-size: 1.5rem;
+  }
+
+  .activity-type-card .card-body {
+    padding: 1rem;
+  }
+
+  .activity-type-card h3 {
+    font-size: 0.9rem;
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #ff5722;
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.cancel-button,
+.submit-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-button {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  color: #666;
+}
+
+.cancel-button:hover {
+  background-color: #eee;
+}
+
+.submit-button {
+  background-color: #ff5722;
+  border: none;
+  color: white;
+}
+
+.submit-button:hover {
+  background-color: #f4511e;
+}
+
+/* Existing styles for the add button */
+.add-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #ff5722;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.add-button:hover {
+  transform: scale(1.1);
+  background-color: #f4511e;
+} 

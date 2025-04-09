@@ -1,0 +1,13 @@
+{
+  "name": "health-tracker",
+  "version": "1.0.0",
+  "description": "Health Tracker Application",
+  "scripts": {
+    "start": "concurrently \"cd backend && npm start\" \"cd frontend && npm start\"",
+    "install-deps": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm start\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.1"
+  }
+} 
