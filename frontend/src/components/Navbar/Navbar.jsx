@@ -8,8 +8,12 @@ import {
   Utensils,
   Target,
   Settings,
+<<<<<<< HEAD
   LogOut,
   Trophy
+=======
+  LogOut
+>>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
 } from 'lucide-react';
 import './Navbar.css';
 
@@ -62,10 +66,13 @@ const NavigationBar = () => {
                   <Target size={18} className="me-2" />
                   Goals
                 </Nav.Link>
+<<<<<<< HEAD
                 <Nav.Link as={Link} to="/achievements" className="nav-link-custom">
                   <Trophy size={18} className="me-2" />
                   Achievements
                 </Nav.Link>
+=======
+>>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
                 <Nav.Link as={Link} to="/settings" className="nav-link-custom">
                   <Settings size={18} className="me-2" />
                   Settings

@@ -27,14 +27,21 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUserData = async (token) => {
         try {
+<<<<<<< HEAD
             const response = await axios.get(`${config.API_BASE_URL}/api/auth/profile`, {
+=======
+            const response = await axios.get(`${config.API_BASE_URL}/users/me`, {
+>>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUser(response.data);
         } catch (error) {
             localStorage.removeItem('token');
             delete axios.defaults.headers.common['Authorization'];
+<<<<<<< HEAD
             setUser(null);
+=======
+>>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
         } finally {
             setLoading(false);
         }
@@ -42,8 +49,13 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (formData) => {
         try {
+<<<<<<< HEAD
             const response = await axios.post(`${config.API_BASE_URL}/api/auth/login`, formData);
             const { token, user } = response.data;
+=======
+            const response = await axios.post(`${config.API_BASE_URL}/users/login`, formData);
+            const { token } = response.data;
+>>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
             localStorage.setItem('token', token);
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setUser(user);
@@ -55,8 +67,13 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (userData) => {
         try {
+<<<<<<< HEAD
             const response = await axios.post(`${config.API_BASE_URL}/api/auth/register`, userData);
             const { token, user } = response.data;
+=======
+            const response = await axios.post(`${config.API_BASE_URL}/users`, userData);
+            const { token } = response.data;
+>>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
             localStorage.setItem('token', token);
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setUser(user);
@@ -87,9 +104,14 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
+<<<<<<< HEAD
         updateUser,
         loading,
         isAuthenticated: !!user
+=======
+        loading,
+        isAuthenticated: !!user  // Add isAuthenticated property
+>>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
     };
 
     if (loading) {
@@ -98,7 +120,11 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={value}>
+<<<<<<< HEAD
             {children}
+=======
+            {children}  // Remove the loading check to prevent flickering
+>>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
         </AuthContext.Provider>
     );
 };

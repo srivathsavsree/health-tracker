@@ -12,8 +12,11 @@ import Dashboard from './components/dashboard/Dashboard';
 import Activities from './components/activities/Activities';
 import Diet from './components/diet/Diet';
 import Goals from './components/goals/Goals';
+<<<<<<< HEAD
 import Settings from './components/settings/Settings';
 import Achievements from './components/achievements/Achievements';
+=======
+>>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 function App() {
@@ -59,6 +62,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+<<<<<<< HEAD
               <Route
                 path="/achievements"
                 element={
@@ -75,6 +79,8 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+=======
+>>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
             </Routes>
           </div>
         </HealthProvider>
