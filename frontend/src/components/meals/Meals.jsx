@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button, Table, Modal, Alert } from 'react-bootstrap';
 import { Plus, Edit2, Trash2, AlertCircle, Coffee, Sun, Moon } from 'lucide-react';
-import axios from 'axios';
-import config from '../../config';
 import { useHealth } from '../../context/HealthContext';
 import './Meals.css';
 
 const Meals = () => {
-  const [meals, setMeals] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedMeal, setSelectedMeal] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
-  const { meals: healthMeals, addMeal, updateMeal, deleteMeal } = useHealth();
+  const { meals, addMeal, updateMeal, deleteMeal, fetchMeals } = useHealth();
 
   const initialMealState = {
     name: '',
@@ -48,14 +45,13 @@ const Meals = () => {
   ];
 
   useEffect(() => {
-    fetchMeals();
+    loadMeals();
   }, []);
 
-  const fetchMeals = async () => {
+  const loadMeals = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${config.API_BASE_URL}/api/meals`);
-      setMeals(response.data);
+      await fetchMeals();
       setError('');
     } catch (error) {
       setError('Failed to fetch meals. Please try again later.');
@@ -124,6 +120,7 @@ const Meals = () => {
     e.preventDefault();
     try {
       setError('');
+      setLoading(true);
 
       // Validate required fields
       if (!newMeal.name || !newMeal.type || !newMeal.date || !newMeal.time) {
@@ -137,12 +134,27 @@ const Meals = () => {
         return;
       }
 
+      // Format the data
       const mealData = {
-        ...newMeal,
-        calories: newMeal.calories || 0,
-        protein: newMeal.protein || 0,
-        carbs: newMeal.carbs || 0,
-        fat: newMeal.fat || 0
+        name: newMeal.name.trim(),
+        type: newMeal.type,
+        date: newMeal.date,
+        time: newMeal.time,
+        calories: Number(newMeal.calories) || 0,
+        protein: Number(newMeal.protein) || 0,
+        carbs: Number(newMeal.carbs) || 0,
+        fat: Number(newMeal.fat) || 0,
+        ingredients: newMeal.ingredients.map(ing => ({
+          name: ing.name.trim(),
+          amount: Number(ing.amount),
+          unit: ing.unit,
+          calories: Number(ing.calories) || 0,
+          protein: Number(ing.protein) || 0,
+          carbs: Number(ing.carbs) || 0,
+          fat: Number(ing.fat) || 0
+        })),
+        notes: newMeal.notes?.trim(),
+        tags: newMeal.tags.filter(tag => tag.trim())
       };
 
       if (selectedMeal) {
@@ -155,9 +167,13 @@ const Meals = () => {
       }
 
       setNewMeal(initialMealState);
+      handleCloseModal();
+      await loadMeals(); // Refresh the meals list
     } catch (error) {
       console.error('Error saving meal:', error);
       setError(error.message || 'Error saving meal. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -206,7 +222,7 @@ const Meals = () => {
 
   const groupMealsByDate = () => {
     const grouped = {};
-    healthMeals.forEach(meal => {
+    meals.forEach(meal => {
       const date = new Date(meal.date).toLocaleDateString();
       if (!grouped[date]) {
         grouped[date] = [];

@@ -22,26 +22,41 @@ export const HealthProvider = ({ children }) => {
         totalActivities: 0
     });
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const { user } = useAuth();
+
+    useEffect(() => {
+        if (user) {
+            Promise.all([
+                fetchActivities(),
+                fetchMeals(),
+                fetchGoals(),
+                fetchHealthStats()
+            ]).finally(() => setLoading(false));
+        }
+    }, [user]);
 
     // Activities
     const addActivity = async (activityData) => {
         try {
+            setError(null);
             const response = await axiosInstance.post('/activities', activityData);
             setActivities(prevActivities => [response.data, ...prevActivities]);
+            await fetchHealthStats(); // Update stats after adding activity
             return response.data;
         } catch (error) {
-            console.error('Error adding activity:', error);
-            throw error.response?.data?.message || 'Error adding activity';
+            setError(error.message);
+            throw error;
         }
     };
 
     const fetchActivities = async () => {
         try {
+            setError(null);
             const response = await axiosInstance.get('/activities');
             setActivities(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
-            console.error('Error fetching activities:', error);
+            setError(error.message);
             setActivities([]);
         }
     };
@@ -49,20 +64,24 @@ export const HealthProvider = ({ children }) => {
     // Meals
     const addMeal = async (mealData) => {
         try {
+            setError(null);
             const response = await axiosInstance.post('/meals', mealData);
             setMeals(prevMeals => [response.data, ...prevMeals]);
+            await fetchHealthStats(); // Update stats after adding meal
             return response.data;
         } catch (error) {
-            throw error.response?.data?.message || 'Error adding meal';
+            setError(error.message);
+            throw error;
         }
     };
 
     const fetchMeals = async () => {
         try {
+            setError(null);
             const response = await axiosInstance.get('/meals');
-            setMeals(response.data || []);
+            setMeals(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
-            console.error('Error fetching meals:', error);
+            setError(error.message);
             setMeals([]);
         }
     };
@@ -227,18 +246,6 @@ export const HealthProvider = ({ children }) => {
         }
     };
 
-    useEffect(() => {
-        if (user) {
-            Promise.all([
-                fetchHealthRecords(),
-                fetchHealthStats(),
-                fetchActivities(),
-                fetchMeals(),
-                fetchGoals()
-            ]).finally(() => setLoading(false));
-        }
-    }, [user]);
-
     const value = {
         healthRecords,
         activities,
@@ -246,6 +253,7 @@ export const HealthProvider = ({ children }) => {
         goals,
         stats,
         loading,
+        error,
         addActivity,
         updateActivity,
         deleteActivity,

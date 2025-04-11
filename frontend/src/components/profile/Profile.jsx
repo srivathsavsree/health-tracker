@@ -58,11 +58,22 @@ const Profile = () => {
                 (updatedData[key] === null || updatedData[key] === undefined) && delete updatedData[key]
             );
 
-            await updateUser(updatedData);
+            const updatedUser = await updateUser(updatedData);
+            
+            // Update the form data with the new values
+            setFormData(prev => ({
+                ...prev,
+                ...updatedUser
+            }));
+            
             setMessage({ type: 'success', text: 'Profile updated successfully!' });
             setIsEditing(false);
         } catch (error) {
-            setMessage({ type: 'error', text: error.message || 'Failed to update profile' });
+            console.error('Profile update error:', error);
+            setMessage({ 
+                type: 'error', 
+                text: error.response?.data?.message || error.message || 'Failed to update profile' 
+            });
         }
     };
 

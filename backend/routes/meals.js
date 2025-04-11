@@ -12,31 +12,109 @@ router.post('/',
   achievementChecker('nutrition', 'meals'),
   async (req, res) => {
     try {
-      const { name, type, calories, protein, carbs, fat, timestamp } = req.body;
+      // Log the incoming request body and headers
+      console.log('Received meal data:', JSON.stringify(req.body, null, 2));
+      console.log('User ID:', req.user.id);
+      console.log('Content-Type:', req.get('Content-Type'));
+
+      const { 
+        name, 
+        type, 
+        date, 
+        time,
+        calories, 
+        protein, 
+        carbs, 
+        fat, 
+        ingredients,
+        notes,
+        tags 
+      } = req.body;
+
+      // Enhanced validation with detailed error messages
+      const errors = [];
+      if (!name) errors.push('Name is required');
+      if (!type) errors.push('Type is required');
+      if (!calories && calories !== 0) errors.push('Calories is required');
       
-      const meal = new Meal({
+      // Validate meal type
+      const validTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
+      if (type && !validTypes.includes(type)) {
+        errors.push(`Invalid meal type. Must be one of: ${validTypes.join(', ')}`);
+      }
+
+      // Validate numeric fields
+      if (calories && isNaN(Number(calories))) errors.push('Calories must be a number');
+      if (protein && isNaN(Number(protein))) errors.push('Protein must be a number');
+      if (carbs && isNaN(Number(carbs))) errors.push('Carbs must be a number');
+      if (fat && isNaN(Number(fat))) errors.push('Fat must be a number');
+      
+      if (errors.length > 0) {
+        console.log('Validation errors:', errors);
+        return res.status(400).json({ 
+          message: 'Validation failed', 
+          errors 
+        });
+      }
+
+      // Safely convert numeric values and handle date/time
+      const mealData = {
         user: req.user.id,
-        name,
+        name: name.trim(),
         type,
-        calories,
-        protein,
-        carbs,
-        fat,
-        timestamp: timestamp || Date.now()
-      });
+        date: date ? new Date(date) : new Date(),
+        time: time || new Date().toLocaleTimeString('en-US', { hour12: false }).slice(0, 5),
+        calories: Number(calories) || 0,
+        protein: Number(protein) || 0,
+        carbs: Number(carbs) || 0,
+        fat: Number(fat) || 0,
+        ingredients: Array.isArray(ingredients) ? ingredients : [],
+        notes: notes || '',
+        tags: Array.isArray(tags) ? tags : []
+      };
+
+      console.log('Processed meal data:', JSON.stringify(mealData, null, 2));
+
+      // Validate date format
+      if (isNaN(mealData.date.getTime())) {
+        console.log('Invalid date format:', date);
+        return res.status(400).json({ 
+          message: 'Invalid date format',
+          error: 'Date must be a valid date string'
+        });
+      }
+
+      const meal = new Meal(mealData);
+      console.log('Created meal instance:', JSON.stringify(meal, null, 2));
 
       await meal.save();
-      await meal.updateGoals();
+      console.log('Meal saved successfully');
+      
+      if (meal.calories > 0) {
+        await meal.updateGoals();
+        console.log('Goals updated successfully');
+      }
 
-      // Get updated meal with populated fields
-      const savedMeal = await Meal.findById(meal._id);
-      res.json({
-        meal: savedMeal,
-        message: 'Meal added successfully'
-      });
+      res.status(201).json(meal);
     } catch (err) {
-      console.error(err.message);
-      res.status(500).json({ message: 'Server error' });
+      console.error('Detailed error in adding meal:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name,
+        code: err.code
+      });
+      
+      if (err.name === 'ValidationError') {
+        return res.status(400).json({ 
+          message: 'Invalid meal data', 
+          errors: Object.values(err.errors).map(e => e.message)
+        });
+      }
+      
+      res.status(500).json({ 
+        message: 'Server error while adding meal',
+        error: err.message 
+      });
     }
   }
 );

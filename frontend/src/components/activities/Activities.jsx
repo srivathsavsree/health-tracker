@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHealth } from '../../context/HealthContext';
 import './Activities.css';
 
@@ -17,7 +17,25 @@ const Activities = () => {
     const [editingActivity, setEditingActivity] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const { activities, addActivity, updateActivity, deleteActivity } = useHealth();
+    const [loading, setLoading] = useState(false);
+    const { activities, addActivity, updateActivity, deleteActivity, fetchActivities } = useHealth();
+
+    useEffect(() => {
+        loadActivities();
+    }, []);
+
+    const loadActivities = async () => {
+        try {
+            setLoading(true);
+            await fetchActivities();
+            setError('');
+        } catch (error) {
+            setError('Failed to fetch activities. Please try again later.');
+            console.error('Error fetching activities:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
