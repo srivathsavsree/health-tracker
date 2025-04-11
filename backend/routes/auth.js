@@ -66,12 +66,14 @@ router.post('/login', async (req, res) => {
     // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
+      console.log(`Login attempt failed: User not found - ${email}`);
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     // Validate password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
+      console.log(`Login attempt failed: Invalid password - ${email}`);
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
@@ -89,6 +91,7 @@ router.post('/login', async (req, res) => {
       { expiresIn: '30d' }
     );
 
+    console.log(`Login successful: ${email}`);
     res.json({
       token,
       user: {
@@ -98,7 +101,7 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (err) {
-    console.error(err.message);
+    console.error('Login error:', err.message);
     res.status(500).json({ message: 'Server error' });
   }
 });

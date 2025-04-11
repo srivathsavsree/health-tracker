@@ -8,23 +8,89 @@ const auth = require('../middleware/auth');
 // @access  Private
 router.post('/', auth, async (req, res) => {
   try {
-    const activity = new Activity({
-      ...req.body,
-      user: req.user.id
-    });
+    console.log('Received activity data:', JSON.stringify(req.body, null, 2));
+    console.log('User ID:', req.user.id);
+    
+    // Validate required fields
+    const requiredFields = ['name', 'type', 'date', 'duration', 'intensity'];
+    const missingFields = requiredFields.filter(field => !req.body[field]);
+    
+    if (missingFields.length > 0) {
+      console.log('Missing required fields:', missingFields);
+      return res.status(400).json({ 
+        message: 'Missing required fields', 
+        missingFields 
+      });
+    }
 
+    // Validate activity type
+    const validTypes = ['walking', 'running', 'cycling', 'swimming', 'gym', 'yoga', 'other'];
+    if (!validTypes.includes(req.body.type)) {
+      console.log('Invalid activity type:', req.body.type);
+      return res.status(400).json({ 
+        message: 'Invalid activity type', 
+        validTypes 
+      });
+    }
+
+    // Validate intensity
+    const validIntensities = ['light', 'moderate', 'vigorous'];
+    if (!validIntensities.includes(req.body.intensity)) {
+      console.log('Invalid intensity level:', req.body.intensity);
+      return res.status(400).json({ 
+        message: 'Invalid intensity level', 
+        validIntensities 
+      });
+    }
+
+    // Validate distance for specific activity types
+    if (['walking', 'running', 'cycling'].includes(req.body.type) && !req.body.distance) {
+      console.log('Missing distance for activity type:', req.body.type);
+      return res.status(400).json({ 
+        message: 'Distance is required for walking, running, and cycling activities' 
+      });
+    }
+
+    // Create activity with validated data
+    const activityData = {
+      ...req.body,
+      user: req.user.id,
+      date: new Date(req.body.date)
+    };
+
+    console.log('Creating activity with data:', JSON.stringify(activityData, null, 2));
+    const activity = new Activity(activityData);
+
+    console.log('Saving activity...');
     await activity.save();
+    console.log('Activity saved successfully');
+
+    console.log('Updating goals...');
     await activity.updateGoals();
+    console.log('Goals updated successfully');
 
     // Get updated activity with populated fields
     const savedActivity = await Activity.findById(activity._id);
+    console.log('Retrieved saved activity:', JSON.stringify(savedActivity, null, 2));
+
     res.json({
       activity: savedActivity,
       message: 'Activity added successfully'
     });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error adding activity:', err);
+    console.error('Error stack:', err.stack);
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ 
+        message: 'Validation error', 
+        errors: Object.values(err.errors).map(e => e.message)
+      });
+    }
+    res.status(500).json({ 
+      message: 'Server error', 
+      error: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 });
 

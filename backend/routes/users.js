@@ -21,21 +21,32 @@ router.get('/me', auth, async (req, res) => {
 // @access  Private
 router.put('/me', auth, async (req, res) => {
   try {
-    const { name, email, settings } = req.body;
+    const { name, email, height, weight, age, gender, activityLevel, settings } = req.body;
     const user = await User.findById(req.user.id);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    // Update basic fields
     if (name) user.name = name;
     if (email) user.email = email;
+    if (height) user.height = height;
+    if (weight) user.weight = weight;
+    if (age) user.age = age;
+    if (gender) user.gender = gender;
+    if (activityLevel) user.activityLevel = activityLevel;
     if (settings) user.settings = { ...user.settings, ...settings };
 
     await user.save();
-    res.json(user);
+    
+    // Remove password from response
+    const userResponse = user.toObject();
+    delete userResponse.password;
+    
+    res.json(userResponse);
   } catch (err) {
-    console.error(err.message);
+    console.error('Profile update error:', err.message);
     res.status(500).json({ message: 'Server error' });
   }
 });

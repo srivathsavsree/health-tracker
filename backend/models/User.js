@@ -15,6 +15,27 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  height: {
+    type: Number,
+    min: 0
+  },
+  weight: {
+    type: Number,
+    min: 0
+  },
+  age: {
+    type: Number,
+    min: 0
+  },
+  gender: {
+    type: String,
+    enum: ['male', 'female', 'other']
+  },
+  activityLevel: {
+    type: String,
+    enum: ['sedentary', 'light', 'moderate', 'active', 'extra'],
+    default: 'moderate'
+  },
   points: {
     type: Number,
     default: 0

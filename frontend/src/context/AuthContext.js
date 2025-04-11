@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../utils/axios';
 import config from '../config';
 
 const AuthContext = createContext();
@@ -13,118 +13,96 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            // Try to get user data with the token
-            fetchUserData(token);
-        } else {
-            setLoading(false);
-        }
+        checkAuth();
     }, []);
 
-    const fetchUserData = async (token) => {
+    const checkAuth = async () => {
         try {
-<<<<<<< HEAD
-            const response = await axios.get(`${config.API_BASE_URL}/api/auth/profile`, {
-=======
-            const response = await axios.get(`${config.API_BASE_URL}/users/me`, {
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setUser(response.data);
+            const token = localStorage.getItem('token');
+            if (token) {
+                const response = await axiosInstance.get('/auth/check');
+                setUser(response.data);
+            }
         } catch (error) {
+            console.error('Auth check failed:', error);
             localStorage.removeItem('token');
-            delete axios.defaults.headers.common['Authorization'];
-<<<<<<< HEAD
             setUser(null);
-=======
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
         } finally {
             setLoading(false);
         }
     };
 
-    const login = async (formData) => {
+    const login = async (credentials) => {
         try {
-<<<<<<< HEAD
-            const response = await axios.post(`${config.API_BASE_URL}/api/auth/login`, formData);
+            const response = await axiosInstance.post('/auth/login', credentials);
             const { token, user } = response.data;
-=======
-            const response = await axios.post(`${config.API_BASE_URL}/users/login`, formData);
-            const { token } = response.data;
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
             localStorage.setItem('token', token);
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setUser(user);
+            setError(null);
             return response.data;
         } catch (error) {
-            throw error;
+            console.error('Login error:', error);
+            const errorMessage = error.response?.data?.message || 'Login failed';
+            setError(errorMessage);
+            throw new Error(errorMessage);
         }
     };
 
     const register = async (userData) => {
         try {
-<<<<<<< HEAD
-            const response = await axios.post(`${config.API_BASE_URL}/api/auth/register`, userData);
+            const response = await axiosInstance.post('/auth/register', userData);
             const { token, user } = response.data;
-=======
-            const response = await axios.post(`${config.API_BASE_URL}/users`, userData);
-            const { token } = response.data;
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
             localStorage.setItem('token', token);
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setUser(user);
+            setError(null);
             return response.data;
         } catch (error) {
-            throw error;
+            console.error('Registration error:', error);
+            const errorMessage = error.response?.data?.message || 'Registration failed';
+            setError(errorMessage);
+            throw new Error(errorMessage);
         }
     };
 
     const logout = () => {
         localStorage.removeItem('token');
-        delete axios.defaults.headers.common['Authorization'];
         setUser(null);
+        setError(null);
     };
 
     const updateUser = async (userData) => {
         try {
-            const response = await axios.put(`${config.API_BASE_URL}/api/user/profile`, userData);
-            setUser(response.data);
+            const response = await axiosInstance.put('/users/me', userData);
+            setUser(prevUser => ({
+                ...prevUser,
+                ...response.data
+            }));
             return response.data;
         } catch (error) {
-            throw error;
+            console.error('Profile update error:', error);
+            const errorMessage = error.response?.data?.message || 'Profile update failed';
+            setError(errorMessage);
+            throw new Error(errorMessage);
         }
     };
 
     const value = {
         user,
+        loading,
+        error,
         login,
         register,
         logout,
-<<<<<<< HEAD
         updateUser,
-        loading,
-        isAuthenticated: !!user
-=======
-        loading,
-        isAuthenticated: !!user  // Add isAuthenticated property
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
+        checkAuth
     };
-
-    if (loading) {
-        return null; // or a loading spinner
-    }
 
     return (
         <AuthContext.Provider value={value}>
-<<<<<<< HEAD
-            {children}
-=======
-            {children}  // Remove the loading check to prevent flickering
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
+            {!loading && children}
         </AuthContext.Provider>
     );
 };

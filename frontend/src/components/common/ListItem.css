@@ -1,0 +1,99 @@
+.list-item {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.list-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.list-item-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.list-item-icon {
+    color: #667eea;
+    flex-shrink: 0;
+}
+
+.list-item-text {
+    flex-grow: 1;
+}
+
+.list-item-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 0.25rem 0;
+}
+
+.list-item-description {
+    font-size: 0.875rem;
+    color: #718096;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.4;
+}
+
+.list-item-date {
+    font-size: 0.75rem;
+    color: #a0aec0;
+    display: block;
+}
+
+.list-item-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: 1rem;
+}
+
+.list-item-button {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.list-item-button.edit {
+    background: #ebf4ff;
+    color: #4299e1;
+}
+
+.list-item-button.edit:hover {
+    background: #bee3f8;
+}
+
+.list-item-button.delete {
+    background: #fff5f5;
+    color: #e53e3e;
+}
+
+.list-item-button.delete:hover {
+    background: #fed7d7;
+}
+
+@media (max-width: 640px) {
+    .list-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .list-item-actions {
+        width: 100%;
+        margin-left: 0;
+        justify-content: flex-end;
+    }
+} 

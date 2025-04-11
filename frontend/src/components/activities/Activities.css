@@ -1,6 +1,8 @@
 .activities-container {
   padding: 2rem 1rem;
   margin-top: 60px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .activities-header {
@@ -143,7 +145,6 @@
   .activity-type-card h3 {
     font-size: 0.9rem;
   }
-<<<<<<< HEAD
 }
 
 .modal-overlay {
@@ -291,6 +292,87 @@
 .add-button:hover {
   transform: scale(1.1);
   background-color: #f4511e;
-=======
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.activity-form {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.activities-list {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.activity-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.activity-info h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.activity-info p {
+  margin: 0.5rem 0;
+  color: #666;
+}
+
+.activity-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.edit-button,
+.delete-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.edit-button {
+  background-color: #2196F3;
+  color: white;
+}
+
+.edit-button:hover {
+  background-color: #1976D2;
+}
+
+.delete-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #da190b;
+}
+
+.no-activities {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  grid-column: 1 / -1;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 } 

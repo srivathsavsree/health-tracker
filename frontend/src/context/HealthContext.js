@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../utils/axios';
 import { useAuth } from './AuthContext';
 import config from '../config';
 
@@ -12,11 +12,6 @@ export const useHealth = () => {
 };
 
 export const HealthProvider = ({ children }) => {
-<<<<<<< HEAD
-    const [activities, setActivities] = useState([]);
-    const [meals, setMeals] = useState([]);
-    const [goals, setGoals] = useState([]);
-=======
     const [healthRecords, setHealthRecords] = useState([]);
     const [activities, setActivities] = useState([]);
     const [meals, setMeals] = useState([]);
@@ -26,40 +21,36 @@ export const HealthProvider = ({ children }) => {
         avgSleepHours: 0,
         totalActivities: 0
     });
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
     const [loading, setLoading] = useState(true);
     const { user } = useAuth();
 
     // Activities
     const addActivity = async (activityData) => {
-<<<<<<< HEAD
         try {
-            const response = await axios.post(`${config.API_BASE_URL}/api/activities`, activityData);
-            setActivities([response.data, ...activities]);
-=======
-        try {
-            const response = await axios.post('/api/activities', activityData);
-            setActivities([response.data, ...activities]);
+            const response = await axiosInstance.post('/activities', activityData);
+            setActivities(prevActivities => [response.data, ...prevActivities]);
             return response.data;
         } catch (error) {
+            console.error('Error adding activity:', error);
             throw error.response?.data?.message || 'Error adding activity';
         }
     };
 
     const fetchActivities = async () => {
         try {
-            const response = await axios.get('/api/activities');
-            setActivities(response.data);
+            const response = await axiosInstance.get('/activities');
+            setActivities(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
             console.error('Error fetching activities:', error);
+            setActivities([]);
         }
     };
 
     // Meals
     const addMeal = async (mealData) => {
         try {
-            const response = await axios.post('/api/meals', mealData);
-            setMeals([response.data, ...meals]);
+            const response = await axiosInstance.post('/meals', mealData);
+            setMeals(prevMeals => [response.data, ...prevMeals]);
             return response.data;
         } catch (error) {
             throw error.response?.data?.message || 'Error adding meal';
@@ -68,57 +59,69 @@ export const HealthProvider = ({ children }) => {
 
     const fetchMeals = async () => {
         try {
-            const response = await axios.get('/api/meals');
-            setMeals(response.data);
+            const response = await axiosInstance.get('/meals');
+            setMeals(response.data || []);
         } catch (error) {
             console.error('Error fetching meals:', error);
+            setMeals([]);
         }
     };
 
     // Goals
     const addGoal = async (goalData) => {
         try {
-            const response = await axios.post('/api/goals', goalData);
-            setGoals([response.data, ...goals]);
+            const response = await axiosInstance.post('/goals', goalData);
+            setGoals(prevGoals => [response.data, ...prevGoals]);
             return response.data;
         } catch (error) {
+            console.error('Error adding goal:', error);
             throw error.response?.data?.message || 'Error adding goal';
         }
     };
 
     const fetchGoals = async () => {
         try {
-            const response = await axios.get('/api/goals');
-            setGoals(response.data);
+            const response = await axiosInstance.get('/goals');
+            setGoals(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
             console.error('Error fetching goals:', error);
+            setGoals([]);
         }
     };
 
     // Health Records
     const fetchHealthRecords = async () => {
         try {
-            const response = await axios.get('/api/health');
-            setHealthRecords(response.data);
+            const response = await axiosInstance.get('/health');
+            setHealthRecords(response.data || []);
         } catch (error) {
             console.error('Error fetching health records:', error);
+            setHealthRecords([]);
         }
     };
 
     const fetchHealthStats = async () => {
         try {
-            const response = await axios.get('/api/health/stats');
-            setStats(response.data);
+            const response = await axiosInstance.get('/health/stats');
+            setStats(response.data || {
+                avgCalories: 0,
+                avgSleepHours: 0,
+                totalActivities: 0
+            });
         } catch (error) {
             console.error('Error fetching health stats:', error);
+            setStats({
+                avgCalories: 0,
+                avgSleepHours: 0,
+                totalActivities: 0
+            });
         }
     };
 
     const createHealthRecord = async (recordData) => {
         try {
-            const response = await axios.post('/api/health', recordData);
+            const response = await axiosInstance.post('/health', recordData);
             setHealthRecords([response.data, ...healthRecords]);
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
             return response.data;
         } catch (error) {
             throw error.response?.data?.message || 'Error adding activity';
@@ -127,16 +130,12 @@ export const HealthProvider = ({ children }) => {
 
     const updateActivity = async (id, activityData) => {
         try {
-<<<<<<< HEAD
-            const response = await axios.put(`${config.API_BASE_URL}/api/activities/${id}`, activityData);
-            setActivities(activities.map(activity => 
-                activity._id === id ? response.data : activity
-=======
-            const response = await axios.put(`/api/health/${id}`, recordData);
-            setHealthRecords(healthRecords.map(record => 
-                record._id === id ? response.data : record
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
-            ));
+            const response = await axiosInstance.put(`/activities/${id}`, activityData);
+            setActivities(prevActivities => 
+                prevActivities.map(activity => 
+                    activity._id === id ? response.data : activity
+                )
+            );
             return response.data;
         } catch (error) {
             throw error.response?.data?.message || 'Error updating activity';
@@ -145,54 +144,24 @@ export const HealthProvider = ({ children }) => {
 
     const deleteActivity = async (id) => {
         try {
-<<<<<<< HEAD
-            await axios.delete(`${config.API_BASE_URL}/api/activities/${id}`);
-            setActivities(activities.filter(activity => activity._id !== id));
-=======
-            await axios.delete(`/api/health/${id}`);
-            setHealthRecords(healthRecords.filter(record => record._id !== id));
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
+            await axiosInstance.delete(`/activities/${id}`);
+            setActivities(prevActivities => 
+                prevActivities.filter(activity => activity._id !== id)
+            );
         } catch (error) {
             throw error.response?.data?.message || 'Error deleting activity';
         }
     };
 
-    const fetchActivities = async () => {
-        try {
-            const response = await axios.get(`${config.API_BASE_URL}/api/activities`);
-            setActivities(response.data);
-        } catch (error) {
-            console.error('Error fetching activities:', error);
-        }
-    };
-
     // Meals/Diet
-    const addMeal = async (mealData) => {
-        try {
-            const response = await axios.post(`${config.API_BASE_URL}/api/diet`, {
-                mealType: mealData.type,
-                foods: [{
-                    name: mealData.name,
-                    quantity: 1,
-                    unit: 'serving',
-                    calories: parseInt(mealData.calories)
-                }],
-                totalCalories: parseInt(mealData.calories),
-                date: new Date(mealData.date + 'T' + mealData.time)
-            });
-            setMeals([response.data, ...meals]);
-            return response.data;
-        } catch (error) {
-            throw error.response?.data?.message || 'Error adding meal';
-        }
-    };
-
     const updateMeal = async (id, mealData) => {
         try {
-            const response = await axios.put(`${config.API_BASE_URL}/api/diet/${id}`, mealData);
-            setMeals(meals.map(meal => 
-                meal._id === id ? response.data : meal
-            ));
+            const response = await axiosInstance.put(`/meals/${id}`, mealData);
+            setMeals(prevMeals => 
+                prevMeals.map(meal => 
+                    meal._id === id ? response.data : meal
+                )
+            );
             return response.data;
         } catch (error) {
             throw error.response?.data?.message || 'Error updating meal';
@@ -201,39 +170,24 @@ export const HealthProvider = ({ children }) => {
 
     const deleteMeal = async (id) => {
         try {
-            await axios.delete(`${config.API_BASE_URL}/api/diet/${id}`);
-            setMeals(meals.filter(meal => meal._id !== id));
+            await axiosInstance.delete(`/meals/${id}`);
+            setMeals(prevMeals => 
+                prevMeals.filter(meal => meal._id !== id)
+            );
         } catch (error) {
             throw error.response?.data?.message || 'Error deleting meal';
         }
     };
 
-    const fetchMeals = async () => {
-        try {
-            const response = await axios.get(`${config.API_BASE_URL}/api/diet`);
-            setMeals(response.data);
-        } catch (error) {
-            console.error('Error fetching meals:', error);
-        }
-    };
-
     // Goals
-    const addGoal = async (goalData) => {
-        try {
-            const response = await axios.post(`${config.API_BASE_URL}/api/goals`, goalData);
-            setGoals([response.data, ...goals]);
-            return response.data;
-        } catch (error) {
-            throw error.response?.data?.message || 'Error adding goal';
-        }
-    };
-
     const updateGoal = async (id, goalData) => {
         try {
-            const response = await axios.put(`${config.API_BASE_URL}/api/goals/${id}`, goalData);
-            setGoals(goals.map(goal => 
-                goal._id === id ? response.data : goal
-            ));
+            const response = await axiosInstance.put(`/goals/${id}`, goalData);
+            setGoals(prevGoals => 
+                prevGoals.map(goal => 
+                    goal._id === id ? response.data : goal
+                )
+            );
             return response.data;
         } catch (error) {
             throw error.response?.data?.message || 'Error updating goal';
@@ -242,30 +196,42 @@ export const HealthProvider = ({ children }) => {
 
     const deleteGoal = async (id) => {
         try {
-            await axios.delete(`${config.API_BASE_URL}/api/goals/${id}`);
-            setGoals(goals.filter(goal => goal._id !== id));
+            await axiosInstance.delete(`/goals/${id}`);
+            setGoals(prevGoals => 
+                prevGoals.filter(goal => goal._id !== id)
+            );
         } catch (error) {
             throw error.response?.data?.message || 'Error deleting goal';
         }
     };
 
-    const fetchGoals = async () => {
+    // Health Records
+    const updateHealthRecord = async (id, recordData) => {
         try {
-            const response = await axios.get(`${config.API_BASE_URL}/api/goals`);
-            setGoals(response.data);
+            const response = await axiosInstance.put(`/health/${id}`, recordData);
+            setHealthRecords(healthRecords.map(record => 
+                record._id === id ? response.data : record
+            ));
+            return response.data;
         } catch (error) {
-            console.error('Error fetching goals:', error);
+            throw error.response?.data?.message || 'Error updating health record';
+        }
+    };
+
+    const deleteHealthRecord = async (id) => {
+        try {
+            await axiosInstance.delete(`/health/${id}`);
+            setHealthRecords(healthRecords.filter(record => record._id !== id));
+        } catch (error) {
+            throw error.response?.data?.message || 'Error deleting health record';
         }
     };
 
     useEffect(() => {
         if (user) {
             Promise.all([
-<<<<<<< HEAD
-=======
                 fetchHealthRecords(),
                 fetchHealthStats(),
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
                 fetchActivities(),
                 fetchMeals(),
                 fetchGoals()
@@ -274,10 +240,11 @@ export const HealthProvider = ({ children }) => {
     }, [user]);
 
     const value = {
-<<<<<<< HEAD
+        healthRecords,
         activities,
         meals,
         goals,
+        stats,
         loading,
         addActivity,
         updateActivity,
@@ -288,22 +255,8 @@ export const HealthProvider = ({ children }) => {
         addGoal,
         updateGoal,
         deleteGoal,
-=======
-        healthRecords,
-        activities,
-        meals,
-        goals,
-        stats,
-        loading,
-        addActivity,
-        addMeal,
-        addGoal,
-        createHealthRecord,
-        updateHealthRecord,
-        deleteHealthRecord,
         fetchHealthRecords,
         fetchHealthStats,
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
         fetchActivities,
         fetchMeals,
         fetchGoals

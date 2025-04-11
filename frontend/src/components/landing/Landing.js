@@ -1,44 +1,32 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import healthImage from '../../assets/health-tracking.jpg';
+import { useAuth } from '../../context/AuthContext';
 import './Landing.css';
+import config from '../../config';
 
 const Landing = () => {
+    const { user } = useAuth();
+
     return (
         <div className="landing">
-<<<<<<< HEAD
-=======
-            <nav className="landing-nav">
-                <div className="nav-logo">Health Tracker</div>
-                <div className="nav-buttons">
-                    <Link to="/login" className="nav-link">Login</Link>
-                    <Link to="/register" className="nav-button">Sign Up</Link>
-                </div>
-            </nav>
-            
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
             <div className="landing-content">
-                <div className="landing-text">
-                    <h1>
-                        <span className="text-primary">Track Your</span><br />
-                        <span className="text-secondary">Health Journey</span><br />
-                        <span className="text-primary">With Us</span>
-                    </h1>
-                    <p className="subtitle">
-                        Your all-in-one solution for monitoring fitness,<br />
-                        nutrition, and wellness goals.
-                    </p>
-                    <Link to="/register" className="cta-button">
-<<<<<<< HEAD
-                        Get Started
-=======
-                        Sign Up Now
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
+                <h1>{config.APP_NAME}</h1>
+                <p>Track your health, achieve your goals, and live better.</p>
+                
+                {user ? (
+                    <Link to="/dashboard" className="cta-button">
+                        Go to Dashboard
                     </Link>
-                </div>
-                <div className="landing-image">
-                    <img src={healthImage} alt="Health tracking illustration" />
-                </div>
+                ) : (
+                    <div className="auth-buttons">
+                        <Link to="/login" className="cta-button">
+                            Login
+                        </Link>
+                        <Link to="/register" className="cta-button secondary">
+                            Register
+                        </Link>
+                    </div>
+                )}
             </div>
         </div>
     );

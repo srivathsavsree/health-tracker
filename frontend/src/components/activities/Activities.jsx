@@ -1,361 +1,325 @@
-<<<<<<< HEAD
 import React, { useState } from 'react';
-import { Activity, Bike, Dumbbell, PersonStanding, X } from 'lucide-react';
+import { useHealth } from '../../context/HealthContext';
 import './Activities.css';
 
 const Activities = () => {
-  const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    duration: '',
-    calories: '',
-    type: 'cardio',
-    time: ''
-  });
-
-  const activities = [
-    {
-      id: 1,
-      title: 'Morning Run',
-      description: '5km run in the park',
-      icon: <PersonStanding size={32} />,
-      duration: 30,
-      calories: 300,
-      type: 'cardio',
-      time: '6:30 AM'
-    },
-    {
-      id: 2,
-      title: 'Cycling',
-      description: 'Bike ride to work',
-      icon: <Bike size={32} />,
-      duration: 45,
-      calories: 400,
-      type: 'cardio',
-      time: '8:00 AM'
-    },
-    {
-      id: 3,
-      title: 'Weight Training',
-      description: 'Upper body workout',
-      icon: <Dumbbell size={32} />,
-      duration: 60,
-      calories: 250,
-      type: 'strength',
-      time: '5:00 PM'
-    },
-    {
-      id: 4,
-      title: 'Cardio Session',
-      description: 'High-intensity interval training',
-      icon: <Activity size={32} />,
-      duration: 40,
-      calories: 350,
-      type: 'cardio',
-      time: '7:00 PM'
-    }
-  ];
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Just close the modal since this is static
-    setShowModal(false);
-    setFormData({
-      title: '',
-      description: '',
-      duration: '',
-      calories: '',
-      type: 'cardio',
-      time: ''
-=======
-import React, { useState, useContext } from 'react';
-import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
-import { 
-  Activity,
-  Bike,
-  Dumbbell,
-  User,
-  Waves,
-  Flower2,
-  Heart,
-  Clock,
-  Flame
-} from 'lucide-react';
-import { HealthContext } from '../../context/HealthContext';
-import './Activities.css';
-
-const Activities = () => {
-  const { addActivity, activities } = useContext(HealthContext);
-  const [newActivity, setNewActivity] = useState({
-    type: '',
-    duration: '',
-    intensity: 'moderate',
-    date: new Date().toISOString().split('T')[0]
-  });
-
-  const activityTypes = [
-    { name: 'Running', icon: Activity, color: '#ff6b6b' },
-    { name: 'Swimming', icon: Waves, color: '#339af0' },
-    { name: 'Cycling', icon: Bike, color: '#51cf66' },
-    { name: 'Gym', icon: Dumbbell, color: '#fcc419' },
-    { name: 'Walking', icon: User, color: '#20c997' },
-    { name: 'Yoga', icon: Flower2, color: '#845ef7' }
-  ];
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await addActivity(newActivity);
-      setNewActivity({
-        type: '',
+    const [newActivity, setNewActivity] = useState({
+        name: '',
+        type: 'walking',
+        date: new Date().toISOString().split('T')[0],
         duration: '',
+        calories: '',
+        distance: '',
         intensity: 'moderate',
-        date: new Date().toISOString().split('T')[0]
-      });
-    } catch (error) {
-      console.error('Error adding activity:', error);
-    }
-  };
-
-  const handleChange = (e) => {
-    setNewActivity({
-      ...newActivity,
-      [e.target.name]: e.target.value
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
+        notes: '',
+        status: 'completed'
     });
-  };
+    const [editingActivity, setEditingActivity] = useState(null);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    const { activities, addActivity, updateActivity, deleteActivity } = useHealth();
 
-  return (
-<<<<<<< HEAD
-    <div className="main-content">
-      <div className="page-container">
-        <h1 className="page-title">Activities</h1>
-        <p className="page-subtitle">Track your workouts and physical activities</p>
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewActivity(prev => ({
+            ...prev,
+            [name]: ['duration', 'calories', 'distance'].includes(name) ? Number(value) : value
+        }));
+        setError('');
+        setSuccess('');
+    };
 
-        <div className="card-grid">
-          {activities.map(activity => (
-            <div key={activity.id} className="custom-card">
-              <div className="card-icon" style={{ color: '#ff5722' }}>
-                {activity.icon}
-              </div>
-              <h3 className="card-title">{activity.title}</h3>
-              <p className="card-text">{activity.description}</p>
-              <div className="activity-details">
-                <p className="card-text">Time: {activity.time}</p>
-                <p className="card-text">Duration: {activity.duration} mins</p>
-                <p className="card-text">Calories: {activity.calories} kcal</p>
-                <p className="card-text">Type: {activity.type}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            setError('');
+            setSuccess('');
 
-        <button className="add-button" onClick={() => setShowModal(true)}>
-          <Activity size={24} />
-        </button>
+            // Validate required fields
+            if (!newActivity.name || !newActivity.type || !newActivity.date || !newActivity.duration) {
+                setError('Please fill in all required fields');
+                return;
+            }
 
-        {showModal && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h2>Add New Activity</h2>
-                <button className="close-button" onClick={() => setShowModal(false)}>
-                  <X size={24} />
-                </button>
-              </div>
-              <form onSubmit={handleSubmit}>
+            // Validate numeric fields
+            if (newActivity.duration <= 0) {
+                setError('Duration must be greater than 0');
+                return;
+            }
+
+            if (newActivity.calories && newActivity.calories < 0) {
+                setError('Calories cannot be negative');
+                return;
+            }
+
+            if (['walking', 'running', 'cycling'].includes(newActivity.type) && (!newActivity.distance || newActivity.distance <= 0)) {
+                setError('Distance is required for walking, running, and cycling activities');
+                return;
+            }
+
+            // Clean up the data before sending
+            const activityData = {
+                name: newActivity.name,
+                type: newActivity.type,
+                date: newActivity.date,
+                duration: Number(newActivity.duration),
+                intensity: newActivity.intensity,
+                status: newActivity.status,
+                notes: newActivity.notes || undefined
+            };
+
+            // Only include numeric fields if they have values
+            if (newActivity.calories) {
+                activityData.calories = Number(newActivity.calories);
+            }
+            
+            if (newActivity.distance) {
+                activityData.distance = Number(newActivity.distance);
+            }
+
+            if (editingActivity) {
+                await updateActivity(editingActivity._id, activityData);
+                setSuccess('Activity updated successfully!');
+                setEditingActivity(null);
+            } else {
+                await addActivity(activityData);
+                setSuccess('Activity added successfully!');
+            }
+
+            setNewActivity({
+                name: '',
+                type: 'walking',
+                date: new Date().toISOString().split('T')[0],
+                duration: '',
+                calories: '',
+                distance: '',
+                intensity: 'moderate',
+                notes: '',
+                status: 'completed'
+            });
+        } catch (error) {
+            console.error('Error saving activity:', error);
+            setError(error.response?.data?.message || error.message || 'Error saving activity. Please try again.');
+        }
+    };
+
+    const handleEdit = (activity) => {
+        setEditingActivity(activity);
+        setNewActivity({
+            name: activity.name,
+            type: activity.type,
+            date: activity.date.split('T')[0],
+            duration: activity.duration,
+            calories: activity.calories,
+            distance: activity.distance || '',
+            intensity: activity.intensity,
+            notes: activity.notes || '',
+            status: activity.status
+        });
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            await deleteActivity(id);
+            setSuccess('Activity deleted successfully!');
+        } catch (error) {
+            console.error('Error deleting activity:', error);
+            setError('Error deleting activity. Please try again.');
+        }
+    };
+
+    const handleCancel = () => {
+        setEditingActivity(null);
+        setNewActivity({
+            name: '',
+            type: 'walking',
+            date: new Date().toISOString().split('T')[0],
+            duration: '',
+            calories: '',
+            distance: '',
+            intensity: 'moderate',
+            notes: '',
+            status: 'completed'
+        });
+        setError('');
+        setSuccess('');
+    };
+
+    return (
+        <div className="activities-container">
+            <h2>{editingActivity ? 'Edit Activity' : 'Add New Activity'}</h2>
+            
+            {error && <div className="alert alert-error">{error}</div>}
+            {success && <div className="alert alert-success">{success}</div>}
+            
+            <form onSubmit={handleSubmit} className="activity-form">
                 <div className="form-group">
-                  <label htmlFor="title">Activity Title</label>
-                  <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    required
-                  />
+                    <label htmlFor="name">Activity Name*</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={newActivity.name}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="e.g., Morning Run"
+                    />
                 </div>
+
                 <div className="form-group">
-                  <label htmlFor="description">Description</label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    required
-                  />
+                    <label htmlFor="type">Activity Type*</label>
+                    <select
+                        id="type"
+                        name="type"
+                        value={newActivity.type}
+                        onChange={handleInputChange}
+                        required
+                    >
+                        <option value="walking">Walking</option>
+                        <option value="running">Running</option>
+                        <option value="cycling">Cycling</option>
+                        <option value="swimming">Swimming</option>
+                        <option value="gym">Gym</option>
+                        <option value="yoga">Yoga</option>
+                        <option value="other">Other</option>
+                    </select>
                 </div>
+
                 <div className="form-group">
-                  <label htmlFor="duration">Duration (minutes)</label>
-                  <input
-                    type="number"
-                    id="duration"
-                    name="duration"
-                    value={formData.duration}
-                    onChange={handleInputChange}
-                    required
-                  />
+                    <label htmlFor="date">Date*</label>
+                    <input
+                        type="date"
+                        id="date"
+                        name="date"
+                        value={newActivity.date}
+                        onChange={handleInputChange}
+                        required
+                    />
                 </div>
+
                 <div className="form-group">
-                  <label htmlFor="calories">Calories</label>
-                  <input
-                    type="number"
-                    id="calories"
-                    name="calories"
-                    value={formData.calories}
-                    onChange={handleInputChange}
-                    required
-                  />
+                    <label htmlFor="duration">Duration (minutes)*</label>
+                    <input
+                        type="number"
+                        id="duration"
+                        name="duration"
+                        value={newActivity.duration}
+                        onChange={handleInputChange}
+                        required
+                        min="1"
+                    />
                 </div>
+
+                {['walking', 'running', 'cycling'].includes(newActivity.type) && (
+                    <div className="form-group">
+                        <label htmlFor="distance">Distance (km)*</label>
+                        <input
+                            type="number"
+                            id="distance"
+                            name="distance"
+                            value={newActivity.distance}
+                            onChange={handleInputChange}
+                            required
+                            min="0"
+                            step="0.01"
+                        />
+                    </div>
+                )}
+
                 <div className="form-group">
-                  <label htmlFor="type">Activity Type</label>
-                  <select
-                    id="type"
-                    name="type"
-                    value={formData.type}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="cardio">Cardio</option>
-                    <option value="strength">Strength</option>
-                    <option value="flexibility">Flexibility</option>
-                    <option value="sports">Sports</option>
-                  </select>
+                    <label htmlFor="intensity">Intensity*</label>
+                    <select
+                        id="intensity"
+                        name="intensity"
+                        value={newActivity.intensity}
+                        onChange={handleInputChange}
+                        required
+                    >
+                        <option value="light">Light</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="vigorous">Vigorous</option>
+                    </select>
                 </div>
+
                 <div className="form-group">
-                  <label htmlFor="time">Time</label>
-                  <input
-                    type="time"
-                    id="time"
-                    name="time"
-                    value={formData.time}
-                    onChange={handleInputChange}
-                    required
-                  />
+                    <label htmlFor="calories">Calories Burned</label>
+                    <input
+                        type="number"
+                        id="calories"
+                        name="calories"
+                        value={newActivity.calories}
+                        onChange={handleInputChange}
+                        min="0"
+                        placeholder="Leave empty for auto-calculation"
+                    />
                 </div>
+
+                <div className="form-group">
+                    <label htmlFor="notes">Notes</label>
+                    <textarea
+                        id="notes"
+                        name="notes"
+                        value={newActivity.notes}
+                        onChange={handleInputChange}
+                        placeholder="Add any additional notes"
+                    />
+                </div>
+
                 <div className="form-buttons">
-                  <button type="button" onClick={() => setShowModal(false)} className="cancel-button">
-                    Cancel
-                  </button>
-                  <button type="submit" className="submit-button">
-                    Add Activity
-                  </button>
+                    <button type="submit" className="submit-button">
+                        {editingActivity ? 'Update Activity' : 'Add Activity'}
+                    </button>
+                    {editingActivity && (
+                        <button
+                            type="button"
+                            className="cancel-button"
+                            onClick={handleCancel}
+                        >
+                            Cancel
+                        </button>
+                    )}
                 </div>
-              </form>
+            </form>
+
+            <h2>Activity History</h2>
+            <div className="activities-list">
+                {!Array.isArray(activities) || activities.length === 0 ? (
+                    <p className="no-activities">No activities recorded yet.</p>
+                ) : (
+                    activities.map((activity) => (
+                        <div key={activity._id} className="activity-card">
+                            <div className="activity-info">
+                                <h3>{activity.name}</h3>
+                                <div className="activity-details">
+                                    <p><strong>Type:</strong> {activity.type}</p>
+                                    <p><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</p>
+                                    <p><strong>Duration:</strong> {activity.duration} minutes</p>
+                                    <p><strong>Intensity:</strong> {activity.intensity}</p>
+                                    {activity.distance && <p><strong>Distance:</strong> {activity.distance} km</p>}
+                                    <p><strong>Calories:</strong> {activity.calories}</p>
+                                    {activity.notes && <p><strong>Notes:</strong> {activity.notes}</p>}
+                                </div>
+                            </div>
+                            <div className="activity-actions">
+                                <button
+                                    onClick={() => handleEdit(activity)}
+                                    className="edit-button"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(activity._id)}
+                                    className="delete-button"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
-          </div>
-        )}
-      </div>
-    </div>
-=======
-    <Container className="activities-container">
-      <div className="activities-header">
-        <h1>Track Your Activities</h1>
-        <p>Log your daily physical activities to monitor your progress</p>
-      </div>
-
-      <Row className="activity-types-grid">
-        {activityTypes.map((activity, index) => (
-          <Col key={index} xs={6} md={4} lg={2} className="mb-4">
-            <Card 
-              className={`activity-type-card ${newActivity.type === activity.name ? 'selected' : ''}`}
-              onClick={() => setNewActivity({ ...newActivity, type: activity.name })}
-            >
-              <Card.Body>
-                <div className="activity-icon" style={{ backgroundColor: activity.color + '15' }}>
-                  <activity.icon size={24} style={{ color: activity.color }} />
-                </div>
-                <h3>{activity.name}</h3>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-
-      <Row className="justify-content-center">
-        <Col md={8}>
-          <Card className="add-activity-card">
-            <Card.Body>
-              <h2>
-                <Activity size={20} className="me-2" />
-                Add New Activity
-              </h2>
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Activity Type</Form.Label>
-                  <Form.Select
-                    name="type"
-                    value={newActivity.type}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select Activity</option>
-                    {activityTypes.map((activity, index) => (
-                      <option key={index} value={activity.name}>
-                        {activity.name}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Duration (minutes)</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="duration"
-                    value={newActivity.duration}
-                    onChange={handleChange}
-                    required
-                    min="1"
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Intensity</Form.Label>
-                  <Form.Select
-                    name="intensity"
-                    value={newActivity.intensity}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="light">Light</option>
-                    <option value="moderate">Moderate</option>
-                    <option value="vigorous">Vigorous</option>
-                  </Form.Select>
-                </Form.Group>
-
-                <Form.Group className="mb-4">
-                  <Form.Label>Date</Form.Label>
-                  <Form.Control
-                    type="date"
-                    name="date"
-                    value={newActivity.date}
-                    onChange={handleChange}
-                    required
-                  />
-                </Form.Group>
-
-                <Button type="submit" className="submit-button">
-                  <Activity size={18} className="me-2" />
-                  Add Activity
-                </Button>
-              </Form>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
-  );
+        </div>
+    );
 };
 
 export default Activities; 

@@ -1,437 +1,278 @@
-<<<<<<< HEAD
 import React, { useState } from 'react';
-import { Apple, Coffee, Pizza, Utensils, Plus, X } from 'lucide-react';
+import { useHealth } from '../../context/HealthContext';
 import './Diet.css';
 
 const Diet = () => {
-  const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    calories: '',
-    protein: '',
-    carbs: '',
-    fat: '',
-    mealType: 'breakfast',
-    time: ''
-  });
-
-  const meals = [
-    {
-      id: 1,
-      title: 'Breakfast',
-      description: 'Oatmeal with fruits and nuts',
-      icon: <Coffee size={32} />,
-      calories: 350,
-      protein: 12,
-      carbs: 45,
-      fat: 14,
-      time: '8:00 AM',
-      type: 'breakfast'
-    },
-    {
-      id: 2,
-      title: 'Morning Snack',
-      description: 'Greek yogurt with berries',
-      icon: <Apple size={32} />,
-      calories: 180,
-      protein: 15,
-      carbs: 20,
-      fat: 8,
-      time: '10:30 AM',
-      type: 'snack'
-    },
-    {
-      id: 3,
-      title: 'Lunch',
-      description: 'Grilled chicken salad',
-      icon: <Utensils size={32} />,
-      calories: 450,
-      protein: 35,
-      carbs: 25,
-      fat: 22,
-      time: '1:00 PM',
-      type: 'lunch'
-    },
-    {
-      id: 4,
-      title: 'Dinner',
-      description: 'Salmon with quinoa and vegetables',
-      icon: <Pizza size={32} />,
-      calories: 550,
-      protein: 40,
-      carbs: 35,
-      fat: 25,
-      time: '7:00 PM',
-      type: 'dinner'
-    }
-  ];
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Just close the modal since this is static
-    setShowModal(false);
-    setFormData({
-      title: '',
-      description: '',
-      calories: '',
-      protein: '',
-      carbs: '',
-      fat: '',
-      mealType: 'breakfast',
-      time: ''
+    const [newMeal, setNewMeal] = useState({
+        name: '',
+        type: 'breakfast',
+        calories: '',
+        protein: '',
+        carbs: '',
+        fat: '',
+        notes: ''
     });
-  };
+    const [editingMeal, setEditingMeal] = useState(null);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    const { meals = [], addMeal, updateMeal, deleteMeal } = useHealth();
 
-  return (
-    <div className="main-content">
-      <div className="page-container">
-        <h1 className="page-title">Diet</h1>
-        <p className="page-subtitle">Track your meals and nutrition</p>
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewMeal(prev => ({
+            ...prev,
+            [name]: ['calories', 'protein', 'carbs', 'fat'].includes(name) ? Number(value) || '' : value
+        }));
+        setError('');
+        setSuccess('');
+    };
 
-        <div className="card-grid">
-          {meals.map(meal => (
-            <div key={meal.id} className="custom-card">
-              <div className="card-icon" style={{ color: '#9C27B0' }}>
-                {meal.icon}
-              </div>
-              <h3 className="card-title">{meal.title}</h3>
-              <p className="card-text">{meal.description}</p>
-              <div className="meal-details">
-                <p className="card-text">Time: {meal.time}</p>
-                <div className="nutrition-info">
-                  <p className="card-text">Calories: {meal.calories} kcal</p>
-                  <p className="card-text">Protein: {meal.protein}g</p>
-                  <p className="card-text">Carbs: {meal.carbs}g</p>
-                  <p className="card-text">Fat: {meal.fat}g</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            setError('');
+            setSuccess('');
 
-        <button className="add-button" onClick={() => setShowModal(true)}>
-          <Plus size={24} />
-        </button>
+            // Validate required fields
+            if (!newMeal.name || !newMeal.type) {
+                setError('Please fill in all required fields');
+                return;
+            }
 
-        {showModal && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h2>Add New Meal</h2>
-                <button className="close-button" onClick={() => setShowModal(false)}>
-                  <X size={24} />
-                </button>
-              </div>
-              <form onSubmit={handleSubmit}>
+            // Convert string values to numbers
+            const mealData = {
+                ...newMeal,
+                calories: Number(newMeal.calories) || 0,
+                protein: Number(newMeal.protein) || 0,
+                carbs: Number(newMeal.carbs) || 0,
+                fat: Number(newMeal.fat) || 0
+            };
+
+            if (editingMeal) {
+                await updateMeal(editingMeal._id, mealData);
+                setSuccess('Meal updated successfully!');
+                setEditingMeal(null);
+            } else {
+                await addMeal(mealData);
+                setSuccess('Meal added successfully!');
+            }
+
+            setNewMeal({
+                name: '',
+                type: 'breakfast',
+                calories: '',
+                protein: '',
+                carbs: '',
+                fat: '',
+                notes: ''
+            });
+        } catch (error) {
+            console.error('Error saving meal:', error);
+            setError(error.response?.data?.message || error.message || 'Error saving meal. Please try again.');
+        }
+    };
+
+    const handleEdit = (meal) => {
+        setEditingMeal(meal);
+        setNewMeal({
+            name: meal.name,
+            type: meal.type,
+            calories: meal.calories,
+            protein: meal.protein,
+            carbs: meal.carbs,
+            fat: meal.fat,
+            notes: meal.notes || ''
+        });
+        setError('');
+        setSuccess('');
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            await deleteMeal(id);
+            setSuccess('Meal deleted successfully!');
+        } catch (error) {
+            console.error('Error deleting meal:', error);
+            setError('Error deleting meal. Please try again.');
+        }
+    };
+
+    const handleCancel = () => {
+        setEditingMeal(null);
+        setNewMeal({
+            name: '',
+            type: 'breakfast',
+            calories: '',
+            protein: '',
+            carbs: '',
+            fat: '',
+            notes: ''
+        });
+        setError('');
+        setSuccess('');
+    };
+
+    return (
+        <div className="diet-container">
+            <h2>{editingMeal ? 'Edit Meal' : 'Add New Meal'}</h2>
+            
+            {error && <div className="alert alert-error">{error}</div>}
+            {success && <div className="alert alert-success">{success}</div>}
+            
+            <form onSubmit={handleSubmit} className="meal-form">
                 <div className="form-group">
-                  <label htmlFor="title">Meal Title</label>
-                  <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    required
-                  />
+                    <label htmlFor="name">Meal Name*</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={newMeal.name}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="e.g., Grilled Chicken Salad"
+                    />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="description">Description</label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    required
-                  />
+                    <label htmlFor="type">Meal Type*</label>
+                    <select
+                        id="type"
+                        name="type"
+                        value={newMeal.type}
+                        onChange={handleInputChange}
+                        required
+                    >
+                        <option value="breakfast">Breakfast</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="dinner">Dinner</option>
+                        <option value="snack">Snack</option>
+                    </select>
+                </div>
+                <div className="form-row">
+                    <div className="form-group">
+                        <label htmlFor="calories">Calories</label>
+                        <input
+                            type="number"
+                            id="calories"
+                            name="calories"
+                            value={newMeal.calories}
+                            onChange={handleInputChange}
+                            min="0"
+                            placeholder="kcal"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="protein">Protein (g)</label>
+                        <input
+                            type="number"
+                            id="protein"
+                            name="protein"
+                            value={newMeal.protein}
+                            onChange={handleInputChange}
+                            min="0"
+                            placeholder="g"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="carbs">Carbs (g)</label>
+                        <input
+                            type="number"
+                            id="carbs"
+                            name="carbs"
+                            value={newMeal.carbs}
+                            onChange={handleInputChange}
+                            min="0"
+                            placeholder="g"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="fat">Fat (g)</label>
+                        <input
+                            type="number"
+                            id="fat"
+                            name="fat"
+                            value={newMeal.fat}
+                            onChange={handleInputChange}
+                            min="0"
+                            placeholder="g"
+                        />
+                    </div>
                 </div>
                 <div className="form-group">
-                  <label htmlFor="mealType">Meal Type</label>
-                  <select
-                    id="mealType"
-                    name="mealType"
-                    value={formData.mealType}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="breakfast">Breakfast</option>
-                    <option value="snack">Snack</option>
-                    <option value="lunch">Lunch</option>
-                    <option value="dinner">Dinner</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label htmlFor="calories">Calories (kcal)</label>
-                  <input
-                    type="number"
-                    id="calories"
-                    name="calories"
-                    value={formData.calories}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="protein">Protein (g)</label>
-                  <input
-                    type="number"
-                    id="protein"
-                    name="protein"
-                    value={formData.protein}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="carbs">Carbs (g)</label>
-                  <input
-                    type="number"
-                    id="carbs"
-                    name="carbs"
-                    value={formData.carbs}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="fat">Fat (g)</label>
-                  <input
-                    type="number"
-                    id="fat"
-                    name="fat"
-                    value={formData.fat}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="time">Time</label>
-                  <input
-                    type="time"
-                    id="time"
-                    name="time"
-                    value={formData.time}
-                    onChange={handleInputChange}
-                    required
-                  />
+                    <label htmlFor="notes">Notes</label>
+                    <textarea
+                        id="notes"
+                        name="notes"
+                        value={newMeal.notes}
+                        onChange={handleInputChange}
+                        placeholder="Add any additional notes"
+                    />
                 </div>
                 <div className="form-buttons">
-                  <button type="button" onClick={() => setShowModal(false)} className="cancel-button">
-                    Cancel
-                  </button>
-                  <button type="submit" className="submit-button">
-                    Add Meal
-                  </button>
+                    <button type="submit" className="submit-button">
+                        {editingMeal ? 'Update Meal' : 'Add Meal'}
+                    </button>
+                    {editingMeal && (
+                        <button
+                            type="button"
+                            className="cancel-button"
+                            onClick={handleCancel}
+                        >
+                            Cancel
+                        </button>
+                    )}
                 </div>
-              </form>
+            </form>
+
+            <h2>Meal History</h2>
+            <div className="meals-list">
+                {!Array.isArray(meals) || meals.length === 0 ? (
+                    <p className="no-meals">No meals recorded yet.</p>
+                ) : (
+                    meals.map((meal) => (
+                        <div key={meal._id} className="meal-card">
+                            <div className="meal-info">
+                                <h3>{meal.name}</h3>
+                                <p className="meal-type">{meal.type}</p>
+                                <div className="nutrition-info">
+                                    <div className="nutrition-item">
+                                        <span>Calories</span>
+                                        <span>{meal.calories} kcal</span>
+                                    </div>
+                                    <div className="nutrition-item">
+                                        <span>Protein</span>
+                                        <span>{meal.protein}g</span>
+                                    </div>
+                                    <div className="nutrition-item">
+                                        <span>Carbs</span>
+                                        <span>{meal.carbs}g</span>
+                                    </div>
+                                    <div className="nutrition-item">
+                                        <span>Fat</span>
+                                        <span>{meal.fat}g</span>
+                                    </div>
+                                </div>
+                                {meal.notes && <p className="meal-notes">{meal.notes}</p>}
+                            </div>
+                            <div className="meal-actions">
+                                <button
+                                    onClick={() => handleEdit(meal)}
+                                    className="edit-button"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(meal._id)}
+                                    className="delete-button"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
-          </div>
-        )}
-      </div>
-    </div>
-=======
-import React, { useState, useContext } from 'react';
-import { Container, Row, Col, Card, Form, Button, Table } from 'react-bootstrap';
-import { 
-  Utensils,
-  Plus,
-  Clock,
-  Calendar,
-  Flame
-} from 'lucide-react';
-import { HealthContext } from '../../context/HealthContext';
-import './Diet.css';
-
-const Diet = () => {
-  const { addMeal } = useContext(HealthContext);
-  const [newMeal, setNewMeal] = useState({
-    name: '',
-    calories: '',
-    type: 'breakfast',
-    date: new Date().toISOString().split('T')[0],
-    time: new Date().toTimeString().split(' ')[0].slice(0, 5)
-  });
-
-  const mealTypes = [
-    { name: 'Breakfast', value: 'breakfast' },
-    { name: 'Lunch', value: 'lunch' },
-    { name: 'Dinner', value: 'dinner' },
-    { name: 'Snack', value: 'snack' }
-  ];
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await addMeal(newMeal);
-      setNewMeal({
-        name: '',
-        calories: '',
-        type: 'breakfast',
-        date: new Date().toISOString().split('T')[0],
-        time: new Date().toTimeString().split(' ')[0].slice(0, 5)
-      });
-    } catch (error) {
-      console.error('Error adding meal:', error);
-    }
-  };
-
-  const handleChange = (e) => {
-    setNewMeal({
-      ...newMeal,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const recentMeals = [
-    { name: 'Oatmeal with Berries', calories: 350, type: 'Breakfast', time: '08:00' },
-    { name: 'Grilled Chicken Salad', calories: 450, type: 'Lunch', time: '12:30' },
-    { name: 'Protein Smoothie', calories: 200, type: 'Snack', time: '15:00' }
-  ];
-
-  return (
-    <Container className="diet-container">
-      <div className="diet-header">
-        <h1>Track Your Diet</h1>
-        <p>Monitor your daily nutrition and calorie intake</p>
-      </div>
-
-      <Row>
-        <Col lg={8}>
-          <Card className="meal-log-card">
-            <Card.Body>
-              <h2>
-                <Utensils size={20} className="me-2" />
-                Recent Meals
-              </h2>
-              <Table responsive className="meal-table">
-                <thead>
-                  <tr>
-                    <th>Meal</th>
-                    <th>Type</th>
-                    <th>Time</th>
-                    <th>Calories</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentMeals.map((meal, index) => (
-                    <tr key={index}>
-                      <td>{meal.name}</td>
-                      <td>{meal.type}</td>
-                      <td>{meal.time}</td>
-                      <td>{meal.calories} cal</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </Card.Body>
-          </Card>
-        </Col>
-
-        <Col lg={4}>
-          <Card className="add-meal-card">
-            <Card.Body>
-              <h2>
-                <Plus size={20} className="me-2" />
-                Add Meal
-              </h2>
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Meal Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name"
-                    value={newMeal.name}
-                    onChange={handleChange}
-                    placeholder="Enter meal name"
-                    required
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Meal Type</Form.Label>
-                  <Form.Select
-                    name="type"
-                    value={newMeal.type}
-                    onChange={handleChange}
-                    required
-                  >
-                    {mealTypes.map((type, index) => (
-                      <option key={index} value={type.value}>
-                        {type.name}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>
-                    <Flame size={18} className="me-2" />
-                    Calories
-                  </Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="calories"
-                    value={newMeal.calories}
-                    onChange={handleChange}
-                    placeholder="Enter calories"
-                    required
-                    min="0"
-                  />
-                </Form.Group>
-
-                <Row>
-                  <Col>
-                    <Form.Group className="mb-3">
-                      <Form.Label>
-                        <Calendar size={18} className="me-2" />
-                        Date
-                      </Form.Label>
-                      <Form.Control
-                        type="date"
-                        name="date"
-                        value={newMeal.date}
-                        onChange={handleChange}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col>
-                    <Form.Group className="mb-3">
-                      <Form.Label>
-                        <Clock size={18} className="me-2" />
-                        Time
-                      </Form.Label>
-                      <Form.Control
-                        type="time"
-                        name="time"
-                        value={newMeal.time}
-                        onChange={handleChange}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-
-                <Button type="submit" className="submit-button">
-                  <Plus size={18} className="me-2" />
-                  Add Meal
-                </Button>
-              </Form>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
->>>>>>> 38d5d9ac36d70cfe93b98db1f590c4c2c64ac384
-  );
+        </div>
+    );
 };
 
 export default Diet; 
